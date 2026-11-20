@@ -1,11 +1,103 @@
 <!DOCTYPE html>
-<html><head><meta charset="utf-8"><title>Admin</title></head>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Admin - Inventory</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
 <body>
-  <h2>Admin - Inventory</h2>
-  <button onclick="logout()">Logout</button>
+  <div class="nav">
+    <a href="inventory.html">Inventory</a>
+    <a href="categories.html">Categories</a>
+    <button onclick="logout()">Logout</button>
+  </div>
+
+  <div class="page">
+    <h2>Inventory</h2>
+    <div class="row">
+      <select id="catFilter"><option value="">All categories</option></select>
+      <input type="text" id="search" placeholder="Find by item id or title">
+      <button id="btnSearch">Search</button>
+      <button id="btnClear">Clear</button>
+    </div>
+    <p id="msg"></p>
+
+    <table>
+      <thead>
+        <tr><th>ID</th><th>Title</th><th>Category</th><th>Qty</th><th>Price</th><th>Status</th></tr>
+      </thead>
+      <tbody id="itemBody"></tbody>
+    </table>
+
+    <div class="pager">
+      <button id="prev">Previous</button>
+      <span id="pageInfo"></span>
+      <button id="next">Next</button>
+    </div>
+  </div>
+
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="../js/config.js"></script>
   <script src="../js/api.js"></script>
   <script src="../js/auth.js"></script>
-  <script>requireLogin("admin");</script>
-</body></html>
+  <script>
+    requireLogin("admin");
+
+    const PAGE_SIZE = 10;
+    let items = [], catNames = {}, page = 1;
+
+    function filtered() {
+      const cat = $("#catFilter").val();
+      const q = $("#search").val().trim().toLowerCase();
+      return items.filter(i =>
+        (!cat || i.catId === cat) &&
+        (!q || i.id.toLowerCase() === q || i.title.toLowerCase().includes(q)));
+    }
+
+    function render() {
+      const list = filtered();
+      const pages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
+      if (page > pages) page = pages;
+      const start = (page - 1) * PAGE_SIZE;
+
+      const rows = list.slice(start, start + PAGE_SIZE).map(i => {
+        const active = i.active !== false;
+        return "<tr class='" + (active ? "" : "inactive") + "'>" +
+          "<td>" + esc(i.id) + "</td>" +
+          "<td>" + esc(i.title) + "</td>" +
+          "<td>" + esc(catNames[i.catId] || "Unknown") + "</td>" +
+          "<td>" + i.qty + "</td>" +
+          "<td>₹" + i.price + "</td>" +
+          "<td>" + (active ? "Active" : "Inactive") + "</td></tr>";
+      });
+      $("#itemBody").html(rows.join("") ||
+        "<tr><td colspan='6'>No items found.</td></tr>");
+
+      $("#pageInfo").text("Page " + page + " of " + pages + " (" + list.length + " items)");
+      $("#prev").prop("disabled", page <= 1);
+      $("#next").prop("disabled", page >= pages);
+    }
+
+    function load() {
+      $.when(getDocs("categories"), getDocs("inventory")).done(function (cats, inv) {
+        cats.sort((a, b) => a.name.localeCompare(b.name));
+        cats.forEach(c => {
+          catNames[c.id] = c.name;
+          $("#catFilter").append("<option value='" + esc(c.id) + "'>" + esc(c.name) + "</option>");
+        });
+        items = inv.sort((a, b) => a.title.localeCompare(b.title));
+        render();
+      }).fail(function () { $("#msg").text("Could not load inventory."); });
+    }
+
+    $("#catFilter").change(function () { page = 1; render(); });
+    $("#btnSearch").click(function () { page = 1; render(); });
+    $("#search").keyup(function (e) { if (e.key === "Enter") { page = 1; render(); } });
+    $("#btnClear").click(function () { $("#search").val(""); $("#catFilter").val(""); page = 1; render(); });
+    $("#prev").click(function () { page--; render(); });
+    $("#next").click(function () { page++; render(); });
+
+    load();
+  </script>
+</body>
+</html>

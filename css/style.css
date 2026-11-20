@@ -16,3 +16,7 @@ table { width: 100%; border-collapse: collapse; background: #fff; }
 th, td { border: 1px solid #d1d5db; padding: 8px; text-align: left; }
 th { background: #e5e7eb; }
 td button { cursor: pointer; margin-right: 4px; }
+
+.row select { padding: 8px; }
+.pager { margin-top: 12px; display: flex; gap: 12px; align-items: center; }
+.inactive { color: #9ca3af; }
