@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head><title>Test</title></head>
+<body>
+  <h3>Open the browser console (F12)</h3>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script>
+  addDoc("categories", { name: "Test" })
+    .done(r => console.log("Success:", r))
+    .fail(e => console.log("Error:", e.status, e.responseText));
+</script>
+</body>
+</html>
