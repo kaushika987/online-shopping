@@ -82,3 +82,32 @@ function getDocById(collection, id) {
     headers: fsHeaders()
   }).then(fromDoc);
 }
+
+// Update only the given fields of a document
+function updateDoc(collection, id, data) {
+  const mask = Object.keys(data)
+    .map(k => "updateMask.fieldPaths=" + encodeURIComponent(k)).join("&");
+  const body = { fields: toFs(data).mapValue.fields };
+  return $.ajax({
+    url: FS_BASE + "/" + collection + "/" + id + "?" + mask + "&key=" + CONFIG.apiKey,
+    method: "PATCH",
+    contentType: "application/json",
+    headers: fsHeaders(),
+    data: JSON.stringify(body)
+  }).then(fromDoc);
+}
+
+// Delete a document by id
+function deleteDocById(collection, id) {
+  return $.ajax({
+    url: FS_BASE + "/" + collection + "/" + id + "?key=" + CONFIG.apiKey,
+    method: "DELETE",
+    headers: fsHeaders()
+  });
+}
+
+// Escape text before putting it into HTML
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}

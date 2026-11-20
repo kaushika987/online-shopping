@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Admin - Categories</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="nav">
+    <a href="inventory.html">Inventory</a>
+    <a href="categories.html">Categories</a>
+    <button onclick="logout()">Logout</button>
+  </div>
+
+  <div class="page">
+    <h2>Categories</h2>
+    <div class="row">
+      <input type="text" id="catName" placeholder="New category name">
+      <button id="btnAdd">Add</button>
+    </div>
+    <p id="msg"></p>
+    <table>
+      <thead><tr><th>ID</th><th>Name</th><th>Actions</th></tr></thead>
+      <tbody id="catBody"></tbody>
+    </table>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/auth.js"></script>
+  <script>
+    requireLogin("admin");
+    let allCats = [];
+
+    function showMsg(t) { $("#msg").text(t); }
+
+    function loadCategories() {
+      getDocs("categories").done(function (cats) {
+        allCats = cats.sort((a, b) => a.name.localeCompare(b.name));
+        const rows = allCats.map(c =>
+          "<tr><td>" + esc(c.id) + "</td><td>" + esc(c.name) + "</td><td>" +
+          "<button class='edit' data-id='" + esc(c.id) + "'>Rename</button>" +
+          "<button class='del' data-id='" + esc(c.id) + "'>Delete</button></td></tr>");
+        $("#catBody").html(rows.join("") ||
+          "<tr><td colspan='3'>No categories yet.</td></tr>");
+      }).fail(function () { showMsg("Could not load categories."); });
+    }
+
+    function nameError(name, exceptId) {
+      if (name.length < 2 || name.length > 40) return "Name must be 2 to 40 characters.";
+      const dup = allCats.some(c => c.id !== exceptId &&
+                                    c.name.toLowerCase() === name.toLowerCase());
+      return dup ? "That category already exists." : "";
+    }
+
+    $("#btnAdd").click(function () {
+      const name = $("#catName").val().trim();
+      const err = nameError(name, null);
+      if (err) return showMsg(err);
+      addDoc("categories", { name: name }).done(function () {
+        $("#catName").val(""); showMsg("Category added."); loadCategories();
+      }).fail(function () { showMsg("Could not add category."); });
+    });
+
+    $("#catBody").on("click", ".edit", function () {
+      const id = $(this).data("id");
+      const current = allCats.find(c => c.id === id);
+      const name = (prompt("New name:", current.name) || "").trim();
+      if (!name || name === current.name) return;
+      const err = nameError(name, id);
+      if (err) return showMsg(err);
+      updateDoc("categories", id, { name: name }).done(function () {
+        showMsg("Category renamed."); loadCategories();
+      }).fail(function () { showMsg("Could not rename."); });
+    });
+
+    $("#catBody").on("click", ".del", function () {
+      const id = $(this).data("id");
+      if (!confirm("Delete this category? Yes = OK, No = Cancel")) return;
+      // Block deleting a category that still has items
+      getDocs("inventory").done(function (items) {
+        if (items.some(i => i.catId === id))
+          return showMsg("Cannot delete: items still use this category.");
+        deleteDocById("categories", id).done(function () {
+          showMsg("Category deleted."); loadCategories();
+        }).fail(function () { showMsg("Could not delete."); });
+      });
+    });
+
+    loadCategories();
+  </script>
+</body>
+</html>
