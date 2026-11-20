@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Sign Up</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="box">
+    <h2>Create Account</h2>
+    <input type="text" id="name" placeholder="Full name">
+    <input type="email" id="email" placeholder="Email">
+    <input type="text" id="mob" placeholder="Mobile (10 digits)">
+    <input type="password" id="password" placeholder="Password (min 6)">
+    <input type="password" id="confirm" placeholder="Confirm password">
+    <button id="btnSignUp">Sign Up</button>
+    <p>Already registered? <a href="index.html">Sign in</a></p>
+    <p id="msg"></p>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    $("#btnSignUp").click(function () {
+      const name = $("#name").val().trim(), email = $("#email").val().trim(),
+            mob = $("#mob").val().trim(), pw = $("#password").val(),
+            confirm = $("#confirm").val();
+
+      if (name.length < 2) return $("#msg").text("Enter your name.");
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return $("#msg").text("Enter a valid email.");
+      if (!/^[0-9]{10}$/.test(mob)) return $("#msg").text("Mobile must be 10 digits.");
+      if (pw.length < 6) return $("#msg").text("Password must be at least 6 characters.");
+      if (pw !== confirm) return $("#msg").text("Passwords do not match.");
+
+      $("#msg").text("Creating account...");
+      signUp(name, email, mob, pw).done(redirectByRole)
+        .fail(e => $("#msg").text(authError(e)));
+    });
+  </script>
+</body>
+</html>

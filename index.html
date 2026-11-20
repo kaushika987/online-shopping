@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Sign In</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="box">
+    <h2>Online Shopping - Sign In</h2>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+    <button id="btnSignIn">Sign In</button>
+    <button id="btnReset" class="link">Forgot password?</button>
+    <p>New here? <a href="signup.html">Create an account</a></p>
+    <p id="msg"></p>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    function validEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
+
+    $("#btnSignIn").click(function () {
+      const email = $("#email").val().trim(), pw = $("#password").val();
+      if (!validEmail(email)) return $("#msg").text("Enter a valid email.");
+      if (!pw) return $("#msg").text("Enter your password.");
+      $("#msg").text("Signing in...");
+      signIn(email, pw).done(redirectByRole)
+        .fail(e => $("#msg").text(authError(e)));
+    });
+
+    $("#btnReset").click(function () {
+      const email = $("#email").val().trim();
+      if (!validEmail(email)) return $("#msg").text("Type your email above first.");
+      resetPassword(email)
+        .done(() => $("#msg").text("Reset link sent. Check your email."))
+        .fail(e => $("#msg").text(authError(e)));
+    });
+  </script>
+</body>
+</html>

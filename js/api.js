@@ -61,3 +61,24 @@ function getDocs(collection) {
     headers: fsHeaders()
   }).then(r => (r.documents || []).map(fromDoc));
 }
+
+// Create a document with a chosen id (we use the auth user id)
+function setDocById(collection, id, data) {
+  const body = { fields: toFs(data).mapValue.fields };
+  return $.ajax({
+    url: FS_BASE + "/" + collection + "?documentId=" + id + "&key=" + CONFIG.apiKey,
+    method: "POST",
+    contentType: "application/json",
+    headers: fsHeaders(),
+    data: JSON.stringify(body)
+  }).then(fromDoc);
+}
+
+// Read one document by id
+function getDocById(collection, id) {
+  return $.ajax({
+    url: FS_BASE + "/" + collection + "/" + id + "?key=" + CONFIG.apiKey,
+    method: "GET",
+    headers: fsHeaders()
+  }).then(fromDoc);
+}
