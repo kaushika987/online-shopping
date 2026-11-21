@@ -395,3 +395,13 @@
   .shop-body { background: var(--white); }
   .bill { max-width: none; margin: 0; padding: 0; box-shadow: none; }
 }
+
+/*Order history*/
+.order-list { display: grid; gap: var(--space-4); max-width: 860px; padding-bottom: var(--space-8); }
+.order-card { padding: var(--space-5); background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); }
+.order-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-3); }
+.order-no { font-family: var(--font-head); font-size: 20px; font-weight: 600; }
+.order-items { margin: 0 0 var(--space-4); font-size: 14px; color: var(--muted); }
+.order-foot { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+.pill { display: inline-block; margin-left: var(--space-2); padding: 3px 12px; border-radius: 999px; background: var(--card); font-size: 12px; font-weight: 600; }
+.pill.ok { color: var(--success); }
