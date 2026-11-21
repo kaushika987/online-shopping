@@ -114,9 +114,10 @@ function esc(s) {
 
 // Placeholder (inline SVG) and image tag shared by admin and customer pages
 const PLACEHOLDER_IMG = "data:image/svg+xml;utf8," + encodeURIComponent(
-  '<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80">' +
-  '<rect width="100%" height="100%" fill="#e5e7eb"/>' +
-  '<text x="50%" y="50%" font-size="12" fill="#6b7280" text-anchor="middle" dominant-baseline="middle">No image</text></svg>');
+  '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="500" viewBox="0 0 400 500">' +
+  '<rect width="400" height="500" fill="#E9E1D9"/>' +
+  '<circle cx="270" cy="170" r="34" fill="#F6F0EA"/>' +
+  '<path d="M60 380l95-130 70 85 50-60 65 105z" fill="#F6F0EA"/></svg>');
 
 function imgHtml(url, cls) {
   return "<img class='" + cls + "' src='" + esc(url || PLACEHOLDER_IMG) + "' loading='lazy' alt='' " +

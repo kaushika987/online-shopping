@@ -1,11 +1,72 @@
 <!DOCTYPE html>
-<html><head><meta charset="utf-8"><title>Shop</title></head>
-<body>
-  <h2>Shop - Inventory</h2>
-  <button onclick="logout()">Logout</button>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shop</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/customer.css">
+</head>
+<body class="shop-body">
+  <div id="siteHeader"></div>
+
+  <main class="container">
+    <div class="shop-top">
+      <div class="crumbs"><a href="home.html">Home</a> / Shop</div>
+      <h1 id="shopTitle">All products</h1>
+    </div>
+
+    <div class="shop-layout">
+      <aside class="filters" id="filters">
+        <div class="filter-group">
+          <h3>Category</h3>
+          <div class="chip-list" id="catFilter"></div>
+        </div>
+        <div class="filter-group">
+          <h3>Price (₹)</h3>
+          <div class="price-inputs">
+            <input type="number" id="minPrice" min="0" placeholder="Min">
+            <span>–</span>
+            <input type="number" id="maxPrice" min="0" placeholder="Max">
+          </div>
+        </div>
+        <button class="btn btn-block btn-sm" id="btnApply">Apply</button>
+        <p><button class="link-btn" id="btnClear">Clear all filters</button></p>
+      </aside>
+
+      <section>
+        <div class="toolbar">
+          <span class="result-count" id="resultCount"></span>
+          <div class="toolbar-right">
+            <button class="btn btn-outline btn-sm filter-toggle" id="btnFilters">Filters</button>
+            <select id="sortBy" aria-label="Sort products">
+              <option value="name">Sort: Name A–Z</option>
+              <option value="low">Price: Low to High</option>
+              <option value="high">Price: High to Low</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid" id="itemBody"></div>
+
+        <div class="pagination">
+          <button class="btn btn-outline btn-sm" id="prev">Previous</button>
+          <span id="pageInfo"></span>
+          <button class="btn btn-outline btn-sm" id="next">Next</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <div id="siteFooter"></div>
+
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="../js/config.js"></script>
   <script src="../js/api.js"></script>
   <script src="../js/auth.js"></script>
-  <script>requireLogin("customer");</script>
-</body></html>
+  <script src="../js/cart-store.js"></script>
+  <script src="../js/layout.js"></script>
+  <script src="../js/product-card.js"></script>
+  <script src="../js/shop.js"></script>
+</body>
+</html>

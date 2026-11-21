@@ -28,3 +28,18 @@ td button { cursor: pointer; margin-right: 4px; }
 
 .thumb { width: 48px; height: 48px; object-fit: cover; }
 .preview { max-width: 160px; max-height: 160px; margin-bottom: 10px; }
+
+/*Design tokens (customer pages)*/
+:root {
+  --bg: #FAF7F2;  --text: #2B2B2B;  --accent: #B76E79;  --accent-dark: #9C5762;
+  --card: #F1E7DF;  --success: #3A8F5C;  --danger: #B04A3F;  --muted: #7C736C;
+  --line: #E7DDD3;  --white: #FFFFFF;
+  --font-head: "Playfair Display", Georgia, serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --radius: 16px;  --radius-sm: 10px;
+  --shadow: 0 6px 20px rgba(43, 43, 43, 0.08);
+  --shadow-hover: 0 14px 34px rgba(43, 43, 43, 0.16);
+  --ease: 0.3s ease;
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px;  --space-4: 16px;
+  --space-5: 24px;  --space-6: 32px;  --space-7: 48px;  --space-8: 72px;
+}
