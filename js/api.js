@@ -111,3 +111,14 @@ function esc(s) {
   return String(s).replace(/[&<>"']/g, c =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
+
+// Placeholder (inline SVG) and image tag shared by admin and customer pages
+const PLACEHOLDER_IMG = "data:image/svg+xml;utf8," + encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80">' +
+  '<rect width="100%" height="100%" fill="#e5e7eb"/>' +
+  '<text x="50%" y="50%" font-size="12" fill="#6b7280" text-anchor="middle" dominant-baseline="middle">No image</text></svg>');
+
+function imgHtml(url, cls) {
+  return "<img class='" + cls + "' src='" + esc(url || PLACEHOLDER_IMG) + "' loading='lazy' alt='' " +
+    "onerror=\"this.onerror=null;this.src=PLACEHOLDER_IMG\">";
+}
