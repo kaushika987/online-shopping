@@ -58,13 +58,13 @@ function resetPassword(email) {
 }
 
 function redirectByRole() {
-  location.href = isAdmin() ? "admin/inventory.html" : "customer/shop.html";
+  location.href = isAdmin() ? "admin/inventory.html" : "customer/home.html";
 }
 
 // Call at the top of protected pages (pages inside admin/ or customer/)
 function requireLogin(role) {
   if (!sessionStorage.getItem("idToken")) { location.href = "../index.html"; return; }
-  if (role === "admin" && !isAdmin()) location.href = "../customer/shop.html";
+  if (role === "admin" && !isAdmin()) location.href = "../customer/home.html";
   if (role === "customer" && isAdmin()) location.href = "../admin/inventory.html";
 }
 
