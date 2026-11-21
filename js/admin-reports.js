@@ -1,7 +1,7 @@
 requireLogin("admin");
 
 const HIGH = 100, LOW = 15;           // high stock: more than 100, low stock: fewer than 15
-let cats = [], items = [], orders = [], lines = [];
+let cats = [], items = [], orders = [], lines = [], customers = [];
 
 const inr = n => "₹" + Number(n).toLocaleString("en-IN", { maximumFractionDigits: 2 });
 const r2 = n => Math.round(n * 100) / 100;
@@ -56,6 +56,26 @@ function orderReport(type) {
   };
 }
 
+// Purchases per customer in the date range, biggest first. type: "cash", "credit" or "" for all. max: optional row limit.
+function customerReport(type, max) {
+  const t = {};
+  orders.filter(o => inRange(o.date) && (!type || o.paymentType === type)).forEach(function (o) {
+    const c = t[o.customerId] = t[o.customerId] || { id: o.customerId, orders: 0, total: 0 };
+    c.orders++; c.total += o.total;
+  });
+  let rows = Object.keys(t).map(function (id) {
+    const c = customers.find(x => x.id === id) || {};
+    return { name: c.name || "Unknown", email: c.email || "", orders: t[id].orders, total: r2(t[id].total) };
+  }).sort((a, b) => b.total - a.total);
+  if (max) rows = rows.slice(0, max);
+  return {
+    cols: [{ key: "name", label: "Customer" }, { key: "email", label: "Email" },
+           { key: "orders", label: "Orders", num: true }, { key: "total", label: "Total purchases", num: true, fmt: inr }],
+    rows: rows,
+    foot: { name: "Total", orders: rows.reduce((n, r) => n + r.orders, 0), total: r2(rows.reduce((n, r) => n + r.total, 0)) }
+  };
+}
+
 // Every report is one entry here. run() returns { cols, rows, foot? }.
 // category: true shows the category filter. dates: true shows the From/To boxes.
 const REPORTS = {
@@ -88,6 +108,20 @@ const REPORTS = {
     label: "Inventory: low stock (under " + LOW + ")",
     run: () => ({ cols: ITEM_COLS, rows: itemRows(items.filter(i => i.qty < LOW).sort((a, b) => a.qty - b.qty)) })
   },
+    customers: {
+    label: "Customers: all details",
+    run: function () {
+      const rows = customers.slice().sort((a, b) => a.name.localeCompare(b.name)).map(c => ({
+        name: c.name, email: c.email, mob: c.mob, limit: c.creditLimit || 0,
+        used: c.creditUsed || 0, left: (c.creditLimit || 0) - (c.creditUsed || 0) }));
+      return { cols: [{ key: "name", label: "Name" }, { key: "email", label: "Email" }, { key: "mob", label: "Mobile" },
+                      { key: "limit", label: "Credit limit", num: true, fmt: inr }, { key: "used", label: "Credit used", num: true, fmt: inr },
+                      { key: "left", label: "Credit available", num: true, fmt: inr }], rows: rows };
+    }
+  },
+  top10:      { label: "Customers: top 10 by purchases", dates: true, run: () => customerReport("", 10) },
+  custCash:   { label: "Customers: cash purchases", dates: true, run: () => customerReport("cash") },
+  custCredit: { label: "Customers: store credit purchases", dates: true, run: () => customerReport("credit") },
   salesAll:    { label: "Sales: all orders", dates: true, run: () => orderReport("") },
   salesCash:   { label: "Sales: cash orders", dates: true, run: () => orderReport("cash") },
   salesCredit: { label: "Sales: store credit orders", dates: true, run: () => orderReport("credit") },
@@ -140,9 +174,9 @@ function show() {
 $("#reportType").html(Object.keys(REPORTS).map(k => "<option value='" + k + "'>" + esc(REPORTS[k].label) + "</option>").join(""));
 $("#reportType, #fCat, #fFrom, #fTo").change(show);
 
-$.when(getAll("categories"), getAll("inventory"), getAll("orders"), getAll("orderItems")).done(function (c, inv, ord, ln) {
+$.when(getAll("categories"), getAll("inventory"), getAll("orders"), getAll("orderItems"), getAll("customers")).done(function (c, inv, ord, ln, cu) {
   cats = c.sort((a, b) => a.name.localeCompare(b.name));
-  items = inv; orders = ord; lines = ln;
+  items = inv; orders = ord; lines = ln; customers = cu;
   cats.forEach(cat => $("#fCat").append("<option value='" + esc(cat.id) + "'>" + esc(cat.name) + "</option>"));
   show();
 }).fail(function () { $("#reportNote").text("Could not load the data. Please refresh."); });
