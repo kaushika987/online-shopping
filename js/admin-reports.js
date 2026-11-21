@@ -76,6 +76,19 @@ function customerReport(type, max) {
   };
 }
 
+// Units and sales per item in the date range. Every inventory item is included, so unsold items show 0.
+function itemSales() {
+  const t = {};
+  items.forEach(i => t[i.id] = { title: i.title, cat: catName(i.catId), units: 0, sales: 0 });
+  lines.filter(l => inRange(l.date)).forEach(function (l) {
+    const x = t[l.itemId] = t[l.itemId] || { title: l.title, cat: catName(l.catId), units: 0, sales: 0 };
+    x.units += l.qty; x.sales += l.lineTotal;
+  });
+  return Object.keys(t).map(id => ({ id: id, title: t[id].title, cat: t[id].cat, units: t[id].units, sales: r2(t[id].sales) }));
+}
+const SELL_COLS = [{ key: "title", label: "Item" }, { key: "cat", label: "Category" },
+                   { key: "units", label: "Units sold", num: true }, { key: "sales", label: "Sales", num: true, fmt: inr }];
+
 // Every report is one entry here. run() returns { cols, rows, foot? }.
 // category: true shows the category filter. dates: true shows the From/To boxes.
 const REPORTS = {
@@ -122,6 +135,16 @@ const REPORTS = {
   top10:      { label: "Customers: top 10 by purchases", dates: true, run: () => customerReport("", 10) },
   custCash:   { label: "Customers: cash purchases", dates: true, run: () => customerReport("cash") },
   custCredit: { label: "Customers: store credit purchases", dates: true, run: () => customerReport("credit") },
+    topItems: {
+    label: "Items: top 10 selling", dates: true,
+    run: () => ({ cols: SELL_COLS, rows: itemSales().filter(i => i.units > 0)
+                  .sort((a, b) => b.units - a.units || b.sales - a.sales).slice(0, 10) })
+  },
+  bottomItems: {
+    label: "Items: bottom 10 selling", dates: true,
+    run: () => ({ cols: SELL_COLS, rows: itemSales()
+                  .sort((a, b) => a.units - b.units || a.sales - b.sales).slice(0, 10) })
+  },
   salesAll:    { label: "Sales: all orders", dates: true, run: () => orderReport("") },
   salesCash:   { label: "Sales: cash orders", dates: true, run: () => orderReport("cash") },
   salesCredit: { label: "Sales: store credit orders", dates: true, run: () => orderReport("credit") },
