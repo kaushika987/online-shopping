@@ -1,44 +1,47 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Sign In</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in</title>
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/customer.css">
 </head>
-<body>
-  <div class="box">
-    <h2>Online Shopping - Sign In</h2>
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Password">
-    <button id="btnSignIn">Sign In</button>
-    <button id="btnReset" class="link">Forgot password?</button>
-    <p>New here? <a href="signup.html">Create an account</a></p>
-    <p id="msg"></p>
-  </div>
+<body class="shop-body auth-body">
+  <main class="auth-wrap">
+    <form class="auth-card" id="loginForm" novalidate>
+      <a class="logo" href="index.html">Rosé Atelier</a>
+      <h1>Welcome back</h1>
+      <p class="sub">Sign in to continue shopping</p>
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" autocomplete="email" placeholder="you@example.com">
+        <small class="field-error"></small>
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" autocomplete="current-password" placeholder="Your password">
+        <small class="field-error"></small>
+      </div>
+
+      <button class="btn btn-block" id="btnSignIn" type="submit">Sign in</button>
+      <p class="form-msg" id="msg" role="status" aria-live="polite"></p>
+
+      <div class="auth-links">
+        New here? <a href="signup.html">Create an account</a>
+        <button class="link-btn" id="btnReset" type="button">Forgot password?</button>
+      </div>
+    </form>
+  </main>
 
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="js/config.js"></script>
   <script src="js/api.js"></script>
   <script src="js/auth.js"></script>
-  <script>
-    function validEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
-
-    $("#btnSignIn").click(function () {
-      const email = $("#email").val().trim(), pw = $("#password").val();
-      if (!validEmail(email)) return $("#msg").text("Enter a valid email.");
-      if (!pw) return $("#msg").text("Enter your password.");
-      $("#msg").text("Signing in...");
-      signIn(email, pw).done(redirectByRole)
-        .fail(e => $("#msg").text(authError(e)));
-    });
-
-    $("#btnReset").click(function () {
-      const email = $("#email").val().trim();
-      if (!validEmail(email)) return $("#msg").text("Type your email above first.");
-      resetPassword(email)
-        .done(() => $("#msg").text("Reset link sent. Check your email."))
-        .fail(e => $("#msg").text(authError(e)));
-    });
-  </script>
+  <script src="js/layout.js"></script>
+  <script src="js/form-utils.js"></script>
+  <script src="js/login-page.js"></script>
 </body>
 </html>
