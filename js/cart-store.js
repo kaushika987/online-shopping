@@ -26,6 +26,11 @@ function showCartCount() {
   $("#cartCount").text(cartCount());
 }
 
+// A page (like checkout) can set window.onCartChange to redraw itself when the bag changes
+function cartChanged() {
+  if (window.onCartChange) window.onCartChange();
+}
+
 // Returns "" when added, otherwise a message explaining why not.
 function addToCart(item, qty) {
   if (!item) return "This product is not available.";
@@ -41,6 +46,7 @@ function addToCart(item, qty) {
                     catId: item.catId, qty: already + qty };
   saveCart(cart);
   showCartCount();
+  cartChanged(); 
   return "";
 }
 
@@ -55,6 +61,7 @@ function removeLine(id) {
   delete cart[id];
   saveCart(cart);
   showCartCount();
+  cartChanged();
 }
 
 // Wishlist: a list of item ids
