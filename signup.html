@@ -1,43 +1,62 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Sign Up</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Create account</title>
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/customer.css">
 </head>
-<body>
-  <div class="box">
-    <h2>Create Account</h2>
-    <input type="text" id="name" placeholder="Full name">
-    <input type="email" id="email" placeholder="Email">
-    <input type="text" id="mob" placeholder="Mobile (10 digits)">
-    <input type="password" id="password" placeholder="Password (min 6)">
-    <input type="password" id="confirm" placeholder="Confirm password">
-    <button id="btnSignUp">Sign Up</button>
-    <p>Already registered? <a href="index.html">Sign in</a></p>
-    <p id="msg"></p>
-  </div>
+<body class="shop-body auth-body">
+  <main class="auth-wrap">
+    <form class="auth-card" id="signupForm" novalidate>
+      <a class="logo" href="index.html">Rosé Atelier</a>
+      <h1>Create your account</h1>
+      <p class="sub">Join us and start shopping</p>
+
+      <div class="field">
+        <label for="name">Full name</label>
+        <input type="text" id="name" autocomplete="name" placeholder="Your full name">
+        <small class="field-error"></small>
+      </div>
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" autocomplete="email" placeholder="you@example.com">
+        <small class="field-error"></small>
+      </div>
+
+      <div class="field">
+        <label for="mob">Mobile number</label>
+        <input type="tel" id="mob" autocomplete="tel" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number">
+        <small class="field-error"></small>
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" autocomplete="new-password" placeholder="At least 6 characters">
+        <small class="field-error"></small>
+      </div>
+
+      <div class="field">
+        <label for="confirm">Confirm password</label>
+        <input type="password" id="confirm" autocomplete="new-password" placeholder="Re-enter your password">
+        <small class="field-error"></small>
+      </div>
+
+      <button class="btn btn-block" id="btnSignUp" type="submit">Create account</button>
+      <p class="form-msg" id="msg" role="status" aria-live="polite"></p>
+
+      <div class="auth-links">Already registered? <a href="index.html">Sign in</a></div>
+    </form>
+  </main>
 
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="js/config.js"></script>
   <script src="js/api.js"></script>
   <script src="js/auth.js"></script>
-  <script>
-    $("#btnSignUp").click(function () {
-      const name = $("#name").val().trim(), email = $("#email").val().trim(),
-            mob = $("#mob").val().trim(), pw = $("#password").val(),
-            confirm = $("#confirm").val();
-
-      if (name.length < 2) return $("#msg").text("Enter your name.");
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return $("#msg").text("Enter a valid email.");
-      if (!/^[0-9]{10}$/.test(mob)) return $("#msg").text("Mobile must be 10 digits.");
-      if (pw.length < 6) return $("#msg").text("Password must be at least 6 characters.");
-      if (pw !== confirm) return $("#msg").text("Passwords do not match.");
-
-      $("#msg").text("Creating account...");
-      signUp(name, email, mob, pw).done(redirectByRole)
-        .fail(e => $("#msg").text(authError(e)));
-    });
-  </script>
+  <script src="js/layout.js"></script>
+  <script src="js/form-utils.js"></script>
+  <script src="js/signup-page.js"></script>
 </body>
 </html>
