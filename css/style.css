@@ -46,5 +46,8 @@ td button { cursor: pointer; margin-right: 4px; }
 
 /*Admin reports*/
 .page.wide { max-width: 1100px; }
+.row select, .row input[type=date] { padding: 8px; }
+#dateWrap { display: flex; align-items: center; gap: 6px; }
 .report-note { margin: 4px 0 12px; color: #6b7280; }
 th.num, td.num { text-align: right; }
+tfoot td { font-weight: bold; background: #e5e7eb; }

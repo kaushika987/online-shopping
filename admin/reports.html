@@ -19,6 +19,10 @@
     <div class="row">
       <select id="reportType"></select>
       <select id="fCat"><option value="">All categories</option></select>
+      <span id="dateWrap">
+        <label for="fFrom">From</label> <input type="date" id="fFrom">
+        <label for="fTo">To</label> <input type="date" id="fTo">
+      </span>
     </div>
 
     <h3 id="reportTitle"></h3>
@@ -26,6 +30,7 @@
     <table>
       <thead id="reportHead"></thead>
       <tbody id="reportBody"></tbody>
+      <tfoot id="reportFoot"></tfoot>
     </table>
   </div>
 
