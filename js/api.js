@@ -82,3 +82,44 @@ function getDocById(collection, id) {
     headers: fsHeaders()
   }).then(fromDoc);
 }
+
+// Update only the given fields of a document
+function updateDoc(collection, id, data) {
+  const mask = Object.keys(data)
+    .map(k => "updateMask.fieldPaths=" + encodeURIComponent(k)).join("&");
+  const body = { fields: toFs(data).mapValue.fields };
+  return $.ajax({
+    url: FS_BASE + "/" + collection + "/" + id + "?" + mask + "&key=" + CONFIG.apiKey,
+    method: "PATCH",
+    contentType: "application/json",
+    headers: fsHeaders(),
+    data: JSON.stringify(body)
+  }).then(fromDoc);
+}
+
+// Delete a document by id
+function deleteDocById(collection, id) {
+  return $.ajax({
+    url: FS_BASE + "/" + collection + "/" + id + "?key=" + CONFIG.apiKey,
+    method: "DELETE",
+    headers: fsHeaders()
+  });
+}
+
+// Escape text before putting it into HTML
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+// Placeholder (inline SVG) and image tag shared by admin and customer pages
+const PLACEHOLDER_IMG = "data:image/svg+xml;utf8," + encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="500" viewBox="0 0 400 500">' +
+  '<rect width="400" height="500" fill="#E9E1D9"/>' +
+  '<circle cx="270" cy="170" r="34" fill="#F6F0EA"/>' +
+  '<path d="M60 380l95-130 70 85 50-60 65 105z" fill="#F6F0EA"/></svg>');
+
+function imgHtml(url, cls) {
+  return "<img class='" + cls + "' src='" + esc(url || PLACEHOLDER_IMG) + "' loading='lazy' alt='' " +
+    "onerror=\"this.onerror=null;this.src=PLACEHOLDER_IMG\">";
+}

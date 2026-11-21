@@ -44,7 +44,7 @@ function signUp(name, email, mob, password) {
     .then(r => {
       if (isAdmin()) return r;   // the admin doesn't need a customer record
       return setDocById("customers", r.localId,
-        { name: name, email: email, mob: mob, creditLimit: 0 });
+      { name: name, email: email, mob: mob, creditLimit: 0, creditUsed: 0 });
     });
 }
 
@@ -58,13 +58,13 @@ function resetPassword(email) {
 }
 
 function redirectByRole() {
-  location.href = isAdmin() ? "admin/inventory.html" : "customer/shop.html";
+  location.href = isAdmin() ? "admin/inventory.html" : "customer/home.html";
 }
 
 // Call at the top of protected pages (pages inside admin/ or customer/)
 function requireLogin(role) {
   if (!sessionStorage.getItem("idToken")) { location.href = "../index.html"; return; }
-  if (role === "admin" && !isAdmin()) location.href = "../customer/shop.html";
+  if (role === "admin" && !isAdmin()) location.href = "../customer/home.html";
   if (role === "customer" && isAdmin()) location.href = "../admin/inventory.html";
 }
 
