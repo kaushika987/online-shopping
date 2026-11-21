@@ -44,7 +44,7 @@ function signUp(name, email, mob, password) {
     .then(r => {
       if (isAdmin()) return r;   // the admin doesn't need a customer record
       return setDocById("customers", r.localId,
-        { name: name, email: email, mob: mob, creditLimit: 0 });
+      { name: name, email: email, mob: mob, creditLimit: 0, creditUsed: 0 });
     });
 }
 

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Admin - Customers</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="nav">
+    <a href="inventory.html">Inventory</a>
+    <a href="categories.html">Categories</a>
+    <a href="customers.html">Customers</a>
+    <button onclick="logout()">Logout</button>
+  </div>
+
+  <div class="page">
+    <h2>Customers and credit limits</h2>
+    <div class="row">
+      <input type="text" id="search" placeholder="Search by name or email">
+      <button id="btnSearch">Search</button>
+      <button id="btnClear">Clear</button>
+    </div>
+    <p id="msg"></p>
+
+    <table>
+      <thead>
+        <tr><th>Name</th><th>Email</th><th>Mobile</th><th>Credit limit</th><th>Used</th><th>Available</th><th>Actions</th></tr>
+      </thead>
+      <tbody id="custBody"></tbody>
+    </table>
+
+    <div class="pager">
+      <button id="prev">Previous</button>
+      <span id="pageInfo"></span>
+      <button id="next">Next</button>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/admin-customers.js"></script>
+</body>
+</html>
