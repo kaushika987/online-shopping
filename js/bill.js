@@ -10,7 +10,7 @@ function notFound() {
   $("#billBody").html('<div class="empty"><h3>Order not found</h3><a class="btn" href="shop.html">Back to shop</a></div>');
 }
 
-$.when(getDocById("orders", orderId), queryDocs("orderItems", "orderId", orderId)).done(function (order, lines) {
+$.when(getDocById("orders", orderId), queryDocs("orderItems", "orderId", orderId, "customerId", sessionStorage.getItem("uid"))).done(function (order, lines) {
   if (order.customerId !== sessionStorage.getItem("uid")) return notFound();
   lines.sort((a, b) => a.title.localeCompare(b.title));
 

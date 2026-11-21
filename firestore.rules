@@ -1,0 +1,46 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function isAdmin()  { return signedIn() && request.auth.token.email.lower() == 'kaushdev654@gmail.com'; }
+
+    // Shop catalogue: anyone can look, only admin edits.
+    // A customer's order may only LOWER the stock (qty) of an item, nothing else.
+    match /categories/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /inventory/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+      allow update: if signedIn()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['qty'])
+        && request.resource.data.qty >= 0
+        && request.resource.data.qty < resource.data.qty;
+    }
+
+    // Customers: admin sees and edits all. A customer may create their own record
+    // (with no credit) and may only change their own creditUsed.
+    match /customers/{uid} {
+      allow read: if isAdmin() || (signedIn() && request.auth.uid == uid);
+      allow write: if isAdmin();
+      allow create: if signedIn() && request.auth.uid == uid
+        && request.resource.data.creditLimit == 0 && request.resource.data.creditUsed == 0;
+      allow update: if signedIn() && request.auth.uid == uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['creditUsed']);
+    }
+
+    // Orders and order lines: a customer can create and read only their own. Admin reads all.
+    match /orders/{id} {
+      allow read: if isAdmin() || (signedIn() && resource.data.customerId == request.auth.uid);
+      allow create: if signedIn() && request.resource.data.customerId == request.auth.uid;
+      allow update, delete: if isAdmin();
+    }
+    match /orderItems/{id} {
+      allow read: if isAdmin() || (signedIn() && resource.data.customerId == request.auth.uid);
+      allow create: if signedIn() && request.resource.data.customerId == request.auth.uid;
+      allow update, delete: if isAdmin();
+    }
+  }
+}

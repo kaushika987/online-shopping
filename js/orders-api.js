@@ -14,21 +14,18 @@ function getRawDoc(collection, id) {
   }).then(doc => doc, xhr => xhr.status === 404 ? null : $.Deferred().reject(xhr));
 }
 
-// All documents in a collection where field == value.
-function queryDocs(collection, field, value) {
-  const query = { structuredQuery: {
-    from: [{ collectionId: collection }],
-    where: { fieldFilter: { field: { fieldPath: field }, op: "EQUAL", value: toFs(value) } }
-  } };
+// All documents in a collection where field == value (and, optionally, field2 == value2).
+function queryDocs(collection, field, value, field2, value2) {
+  const eq = (f, v) => ({ fieldFilter: { field: { fieldPath: f }, op: "EQUAL", value: toFs(v) } });
+  const where = field2 ? { compositeFilter: { op: "AND", filters: [eq(field, value), eq(field2, value2)] } } : eq(field, value);
   return $.ajax({
     url: FS_BASE + ":runQuery?key=" + CONFIG.apiKey,
     method: "POST",
     contentType: "application/json",
     headers: fsHeaders(),
-    data: JSON.stringify(query)
+    data: JSON.stringify({ structuredQuery: { from: [{ collectionId: collection }], where: where } })
   }).then(rows => rows.filter(r => r.document).map(r => fromDoc(r.document)));
 }
-
 //Small helpers
 
 function round2(n) { return Math.round(n * 100) / 100; }
