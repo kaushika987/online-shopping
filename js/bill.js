@@ -32,7 +32,8 @@ $.when(getDocById("orders", orderId), queryDocs("orderItems", "orderId", orderId
     '<div class="bill-row head"><span>Item</span><span>Qty</span><span>Price</span><span>Amount</span></div>' + rows +
     '<div class="sum-row"><span>Shipping</span><span>Free</span></div>' +
     '<div class="bill-total"><span>Total</span><span>' + money(order.total) + '</span></div></article>' +
-    '<div class="bill-actions no-print"><button class="btn" id="btnPrint">Print bill</button>' +
+     '<div class="bill-actions no-print"><button class="btn" id="btnPrint">Print bill</button>' +
+      '<a class="btn btn-outline" href="orders.html">My orders</a>' +
       '<a class="btn btn-outline" href="shop.html">Continue shopping</a></div>');
 }).fail(notFound);
 
