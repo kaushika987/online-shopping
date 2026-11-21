@@ -2,7 +2,7 @@ requireLogin("admin");
 
 const PAGE_SIZE = 10;
 let items = [], catNames = {}, page = 1, editingId = null;
-
+let newImage = "", oldImage = "", imageError = "";
 
 //filtering
 function filtered() {
@@ -30,6 +30,7 @@ function render() {
         const id = esc(i.id);
 
         return "<tr class='" + (active ? "" : "inactive") + "'>" +
+            "<td>" + imgHtml(i.imageUrl, "thumb") + "</td>" +
             "<td>" + id + "</td>" +
             "<td>" + esc(i.title) + "</td>" +
             "<td>" + esc(catNames[i.catId] || "Unknown") + "</td>" +
@@ -43,7 +44,7 @@ function render() {
     });
 
     $("#itemBody").html(rows.join("") ||
-        "<tr><td colspan='7'>No items found.</td></tr>"
+        "<tr><td colspan='8'>No items found.</td></tr>"
     );
 
     $("#pageInfo").text(
@@ -91,6 +92,9 @@ function loadAll() {
         });
 }
 
+function showPreview(url) {
+  if (url) $("#fPreview").attr("src", url).show(); else $("#fPreview").hide();
+}
 
 //add / edit form
 function openForm(item) {
@@ -106,6 +110,10 @@ function openForm(item) {
     $("#formMsg").text("");
     $("#formBox").show();
     $("#fTitle").focus();
+
+   newImage = ""; imageError = ""; oldImage = item ? (item.imageUrl || "") : "";
+   $("#fImage").val("");
+   showPreview(oldImage);
 }
 
 function closeForm() {
@@ -146,6 +154,7 @@ $("#btnSave").click(function () {
         err = "Price must be greater than 0.";
 
     if (err) return $("#formMsg").text(err);
+    if (imageError) return $("#formMsg").text(imageError);
 
     const data = {
         catId: catId,
@@ -154,6 +163,8 @@ $("#btnSave").click(function () {
         qty: qty,
         price: price
     };
+
+    if (!editingId || newImage) data.imageUrl = newImage;
 
     const done = function (text) {
         closeForm();
@@ -232,6 +243,7 @@ $("#itemBody").on("click", ".del", function () {
 });
 
 
+
 //filters and pagination
 $("#catFilter").change(function () {
     page = 1;
@@ -266,6 +278,21 @@ $("#prev").click(function () {
 $("#next").click(function () {
     page++;
     render();
+});
+
+$("#fImage").change(function () {
+  const file = this.files[0];
+  newImage = ""; imageError = "";
+  $("#formMsg").text("");
+  if (!file) return showPreview(oldImage);
+
+  if (!file.type.startsWith("image/")) imageError = "Please choose an image file.";
+  else if (file.size > 500 * 1024) imageError = "Please choose an image under 500 KB.";
+  if (imageError) { showPreview(oldImage); return $("#formMsg").text(imageError); }
+
+  const reader = new FileReader();
+  reader.onload = function () { newImage = reader.result; showPreview(newImage); };
+  reader.readAsDataURL(file);
 });
 
 
